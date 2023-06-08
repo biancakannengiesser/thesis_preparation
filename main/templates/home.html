@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+
+
+<div class = "homepage">
+
+	{% if user.is_authenticated %}
+	
+	<h1> Hello {{name}} </h1>
+
+	{% endif %}
+
+	{% if messages %}
+
+		{% for message in messages %}
+
+		<h2> {{message}} </h2>
+
+		{% endfor %}
+
+	{% endif %}
+
+	<span> ABOUT US </span>
+
+	<p> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+	<button class = "get_started"> <a href="{% url 'register' %}">Get Started</a> </button>
+</div>
+
+<!-- <div class = "container">
+	
+	<img id="universe" src="{% static 'main/images/universe.jpg' %}">
+	<img id="body" src="{% static 'main/images/body.jpg' %}">
+	<img id="online" src="{% static 'main/images/homepage.png' %}">
+
+</div> -->
+
+
+<div class="form_homepage">
+{% if not user.is_authenticated %}
+
+<h1>Join Our Team!</h1>
+<h3>Fill out this form and you will be contacted by one of our team members for an interview.</h3>
+<form method="POST" class = "new_member_form" enctype="multipart/form-data" id=new_member_form>
+	{% csrf_token %}
+	<div>
+		{{ form.first_name|as_crispy_field }}
+		{{ form.last_name|as_crispy_field }}
+		{{ form.email_address|as_crispy_field }}
+		{{ form.phone_number|as_crispy_field }}
+		{{ form.resume|as_crispy_field }}
+		{{ form.motivation|as_crispy_field }}
+	</div>
+	<button class = "request_button">Send request</button>
+</form> 
+
+
+{% endif %}
+
+</div>
+
+<style>
+
+#universe{
+	width:250px;
+	height: 150px;
+}
+#online{
+	width:300px;
+	height: 200px;
+}
+#body{
+	width:200px;
+	height: 300px;
+}
+img{
+/*	width:250px;
+	height: 150px;*/
+	object-fit: cover;
+	object-position: bottom;
+	padding:5px;
+}
+/*.container{
+	display: flex;
+	max-width: 1400px;
+	width: 100%;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+*/
+
+.homepage{
+	width: 100%;
+	height: 80vh;
+	padding: 40px 0;
+	background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url("{% static 'main/images/ill.jpg' %}");
+	background-size:cover;
+	background-position: center;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 100px;
+	text-align: center;
+}
+@media (max-width: 768px) {
+  .homepage {
+    padding: 50px 0;
+    height: auto;
+  }
+}
+.homepage span{
+	font-size: 35px;
+	font-weight: bold;
+	color: white;
+	padding: 30px 0px 10px 0px;
+}
+
+.homepage h1{
+	text-align: center;
+	color: hotpink;
+	padding: 10px 0px 10px 0px;
+	font-size: 3.7rem;
+}
+.form_homepage h1{
+	text-align: center;
+	color: hotpink;
+	padding: 10px 0px 10px 0px;
+	font-size: 3rem;
+}
+.homepage h2{
+	text-align: center;
+	color: hotpink;
+	padding: 10px 0px 10px 0px;
+	font-size: 2.5rem;
+}
+
+.homepage h3, .form_homepage h3{
+	text-align: center;
+	color: #FFB6C1;
+}
+
+.homepage p{
+	max-width: 1200px;
+	margin: 0px auto;
+	color: crimson;
+	font-size: 1.5rem;
+	padding: 20px 20px 0px 20px;
+}
+.get_started{
+	background-color: #DAA520;
+	display: block;
+	margin: 70px auto 20px ;
+	text-align: center;
+	border-radius: 12px;
+	border: 2px solid #366473;
+	padding: 14px 70px;
+	outline: none;
+	color: white;
+	cursor: pointer;
+	transition: 0.25px;
+}
+.get_started:hover{
+	background-color: #008000;
+}
+.get_started a{
+	text-decoration: none;
+	color: white;
+	font-weight: bold;
+}
+.request_button {
+  background-color: #3BAF9F;
+  display: block;
+  margin: 20px auto 0px ;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 80px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+}
+
+.request_button:hover {
+  background-color: #483D8B;
+}
+
+.new_member_form{
+	width: 70%;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+  	background-color: #f8f8f8;
+  	padding: 20px;
+  	margin-top: 50px;
+}
+</style>
+
+<script>
+  {% if has_errors %}
+  document.getElementById('new_member_form').scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+  {% endif %}
+</script>
+
+{% endblock %}

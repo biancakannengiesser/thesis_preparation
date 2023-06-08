@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<h2>Choose any of the following subjects and start learning!</h2>
+
+<br><br><hr>
+
+
+<div class = "course-container">
+
+	{% for course in courses %}
+
+	<div class = "course">
+		<div class="course_image">
+			{% if course.image %}
+			<img src="{{ course.image.url }}">
+			{% else %}
+			<img class = "not_available_image" src="{% static 'courses/images/na.png' %}" alt="Course Image">
+			{% endif %}
+		</div>
+		<div class = "content">
+			<div class="title">{{ course.title }}</div>
+			<div class="course_teacher"><span> Teacher:   </span>
+				{% if course.teacher %}
+	        	<p class="member_subject"> {{ course.teacher.get_full_name }}</p>
+	        	{% else %}
+	        	<p class="member_subject"> N/A</p>
+	        	{% endif %}
+	        </div>
+			<a href="{% url 'course_detail' course.id %}">
+                <button class = "go_to_course_btn">Go to course</button>
+            </a>
+		</div>
+	</div>
+
+	{% endfor %}
+
+</div>
+
+	
+
+<style>
+
+h2{
+	text-align: center;
+	padding-top: 40px;
+	color: #116D6E;
+}
+
+
+.course-container{
+    padding: 60px 0px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 80px; /* adjust for desired spacing */
+/*    justify-items: center; */
+    margin: 0 auto;
+    max-width: 1400px; /* adjust as necessary */
+}
+
+.course{
+    display: flex;
+    flex-direction: column;
+    max-width: 380px;
+    align-items: start;
+    box-shadow: 0 6px 4px 0 rgba(0,0,0,0.3), 0 2px 12px 0 rgba(0,0,0,0.19);
+    background-color: white;
+    border-radius: 20px;
+}
+.course_image{
+    width: 100%;
+    height: 230px;
+}
+.course_image img{
+	object-fit: cover;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.content{
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: start; /* Aligns items to the start/left of the flex container */
+}
+
+.title{
+    display: flex; /* Makes elements in title on same line */
+    color: #FF6969;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    margin: 5px 0px;
+    font-weight: bold;
+}
+
+.course_teacher{
+    display: flex; /* Makes elements in course_teacher on same line */
+    color: blue;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.course_teacher span{
+	font-size: 1rem;
+	color: black;
+}
+.course_teacher p{
+	font-size: 1rem;
+	color: black;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.go_to_course_btn{
+  background-color: #654E92;
+  margin: 5px auto 0px ;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 50px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+  align-self: center;
+}
+.go_to_course_btn:hover{
+	background-color: #6C9BCF;
+}
+
+@media (max-width: 768px) {
+    .course-container {
+        grid-template-columns: 1fr;
+    }
+    .course {
+        margin: 20px auto;
+    }
+}
+</style>
+
+{% endblock %}

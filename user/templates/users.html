@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<h1>List of users and account information</h1>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Date Joined</th>
+      <th>Last Login</th>
+      <th>Admin</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.get_full_name }}</td>
+      <td>{{ user.date_joined }}</td>
+      <td>{{ user.last_login }}</td>
+      <td>
+        {% if user.is_staff %}
+          <span style="color:green;">✔️</span>
+        {% else %}
+          <span style="color:red;">❌</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<style>
+
+h1{
+	text-align: center;
+	padding-top: 2%;
+	color: #654E92;
+	font-size: 3em;
+	font-weight: bold;
+}
+
+table {
+  width: 70%; 
+  margin: auto;
+  margin-top:5%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background-color: #FFF9DE;
+
+}
+
+th {
+  font-size: 1.2em;
+  border: 3px solid #A6D0DD;
+  padding: 15px;
+  color:#FF6969;
+}
+
+td {
+  border: 2px solid #A6D0DD;
+  padding: 15px;
+  padding-top: 20px;
+}
+</style>
+
+
+{% endblock %}

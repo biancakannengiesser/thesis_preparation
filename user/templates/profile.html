@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row profile-card">
+        <!-- Profile Card -->
+        <!-- User Details Card -->
+        <div class="col-md-8 mt-4 mt-md-0">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Phone Number:</strong> {{ user.userprofile.phone }}</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="#" class="btn btn-primary profile-button">Edit Profile</a>
+            </div>
+        </div>
+
+                <div class="col-md-4 mt-4 mt-md-0">
+            <div class="card text-center">
+
+                {% if user.image %}
+                <img class="card-img-top" src="{{ user.userprofile.image.url }}" alt="Profile image" style="border-radius: 50%;">
+                {% else %}
+                <img class = "not_available_image" src="{% static 'user/images/symbol.png' %}" alt="Staff Member Image">
+                {% endif %}
+<!--                 <div class="card-body">
+                    <h5 class="card-title">{{ user.username }}</h5>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        margin-top: 50px;
+    }
+
+    .profile-card {
+        border: 2px solid #146C94;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .profile-button {
+        background-color: #654E92;
+        border: 2px solid #366473;
+        color: white;
+        padding: 14px 50px;
+        border-radius: 12px;
+        transition: 0.25s;
+        outline: none;
+        cursor: pointer;
+    }
+</style>
+
+{% endblock %}

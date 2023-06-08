@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class = "introduction">
+
+<h1>Meet Our Team</h1>
+
+<p> Scroll down to see information about every person that works on keeping this website up to date and handles the material for the children.</p>
+
+</div>
+
+{% for staff_profile in staff_profiles %}
+
+<div class = "staff">
+	<div class="staff_members">
+	    <div class="staff-image">
+	    	{% if staff_profile.image %}
+	        <img src="{{ staff_profile.image.url }}" alt="Staff Member Image">
+	        {% else %}
+	        <img class = "not_available_image" src="{% static 'user/images/symbol.png' %}" alt="Staff Member Image">
+	        {% endif %}
+	    </div>
+	    <div class="member">
+	        <h2 class="member_name">{{ staff_profile.user.get_full_name }}</h2>
+	        <span> SUBJECT: </span>
+	        {% if staff_profile.subject %}
+	        	<p class="member_subject">{{ staff_profile.subject }}</p>
+	        {% else %}
+	        	<p class="member_subject">Subject not available</p>
+	        {% endif %}
+	        <span> ABOUT: </span>
+	        <p class="description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</p>
+
+	        {% if user.is_authenticated %}
+
+		        <span> PHONE NUMBER: </span>
+
+		        {% if staff_profile.phone %}
+
+		        	<p class="member_subject">{{ staff_profile.phone }}</p>
+
+		        {% else %}
+
+		        <p class = "phone_number_not_available">Phone number not available</p>
+
+		        {% endif%}
+
+		        {% if staff_profile.cv %}
+
+			        <button class="view_resume_button" onclick="openCV('{{ staff_profile.cv.url }}')">View Resume</button>
+
+			    {% else %}
+
+			        <button class="view_resume_button" >Resume not available</button>
+
+			    {% endif %}
+
+	        {% else %}
+
+	        	<button class="view_more_button"> <a href="{% url 'login' %}">Log in to see more</a> </button>
+
+	        {% endif%}
+
+	    </div>
+	</div>
+</div>
+
+
+
+{% endfor %}
+
+<style>
+
+.introduction h1, .introduction p{
+	text-align: center;
+	padding-top: 30px;
+	color: black;
+}
+
+.staff{
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+	
+.staff_members {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,0.19);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 30px;
+    max-width: 70%;
+    max-height: 60vh;
+}
+
+.staff-image {
+    width: 30%;
+}
+
+.staff-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.member {
+    padding: 20px;
+    width: 70%;
+    overflow: auto;
+}
+
+.member_name{
+	color:#FF6969;
+}
+
+span{
+	color: black;
+	text-decoration: underline;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #A6D0DD;
+}
+.member_subject{
+	font-size: 1.1em;
+	text-transform: uppercase;
+}
+.description{
+	font-size: 1.1em;
+}
+.view_resume_button{
+  background-color: #FF6969;
+  margin: 20px auto 0px ;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 50px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+}
+.view_resume_button:hover{
+	background-color: #A6D0DD;
+}
+.view_more_button{
+  background-color: #FF6969;
+  margin: 20px auto 0px ;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 50px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+}
+.view_more_button:hover{
+	background-color: #A6D0DD;
+}
+.view_more_button a{
+	text-decoration: none;
+	color: white;
+	font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .staff_members {
+        max-height: 25vh;
+        max-width: 80%;
+    }
+    .member h2{
+    	font-size: 1.1em;
+    }
+    span{
+    	font-size: 1em;
+    }
+    .description{
+    	font-size: 1em;
+    }
+/*    .not_available_image{
+    	width: 100% !important;
+    	height: 80% !important;
+    }*/
+}
+</style>
+
+<script>
+function openCV(url) {
+    window.open(url, '_blank');
+}
+</script>
+
+
+
+{% endblock%}

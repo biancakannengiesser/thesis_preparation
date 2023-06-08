@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{%block content%}
+
+
+<form method="POST" class = "login_form">
+	<h4>LOG IN</h4>
+	{% csrf_token %}
+	{{ form|crispy }}
+	<button class="login_button">Log In</button>
+
+	<hr>
+	<label>Dont have an account?</label>
+	<a href="{% url 'register' %}">Register here</a>
+</form> 
+
+<style> 
+
+.login_form{
+	width: 50%;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+  	background-color: #f8f8f8;
+  	padding: 20px;
+  	margin-top: 50px;
+}
+
+.login_button {
+  background-color: #F08080;
+  display: block;
+  margin: 20px auto 0px ;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 110px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+}
+
+.login_button:hover {
+  background-color: #DC143C;
+}
+
+a{
+	text-decoration: none;
+	color: #6495ED;
+}
+
+@media only screen and (max-width: 600px) {
+  .login_form {
+    width: 90%;
+  }
+
+  .login_button {
+    padding: 10px 50px;
+  }
+}
+
+
+</style>
+
+{%  endblock %}
+

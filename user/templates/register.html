@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{%block content%}
+
+<form method="POST" class = "register_form">
+	<h2>Create an account</h2>
+	{% csrf_token %}
+	<div>
+		{{ form.username|as_crispy_field }}
+		{{ form.first_name|as_crispy_field }}
+		{{ form.last_name|as_crispy_field }}
+		{{ form.email|as_crispy_field }}
+		{{ form.phone|as_crispy_field }}
+		{{ form.password1|as_crispy_field }}
+		{{ form.password2|as_crispy_field }}
+	</div>
+	<button class = "register_button">Create account</button>
+</form> 
+
+<style>
+
+
+	
+.register_button {
+  background-color: #3BAF9F;
+  display: block;
+  margin: 20px auto 0px ;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 110px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+}
+
+.register_button:hover {
+  background-color: #483D8B;
+}
+
+.register_form{
+	width: 70%;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+  	background-color: #f8f8f8;
+  	padding: 20px;
+  	margin-top: 50px;
+}
+</style>
+
+{%  endblock %}
+

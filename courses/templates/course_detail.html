@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="course-info">
+        <h1 class="course-title text-center">{{ course.title }}</h1>
+</div>
+<div class="container">
+    <div class="slick-slider mt-5">
+    {% for image in course.images.all %}
+        <div>
+            <a href="{{ image.image.url }}" data-lightbox="course-image">
+                <img src="{{ image.image.url }}" style="width: 100%;">
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+</div>
+
+<div class="course-info">
+        <p class="course-description mt-3">{{ course.description }}</p>
+        <p class="course-description-question"> What is {{ course.title }} ?</p>
+        <p class="course-description-answer">{{course.specific_content}}</p>
+</div>
+
+<hr>
+
+<h2 class = "text text-center">Watch the following video and then proceed further.</h2>
+
+<div class="container text-center">
+
+    <!-- YouTube video -->
+	<div class="embed-responsive embed-responsive-16by9 mt-5" style="width: 100%; height: auto;">
+	    <iframe class="embed-responsive-item" src="{{ course.videos.first.url }}" style="width: 80%; height: 600px;" allowfullscreen></iframe>
+	</div>
+
+</div>
+
+
+<div class="container-lesson">
+    {% for lesson in course.lesson_set.all %}
+        {% if forloop.counter0|divisibleby:2 %}
+            <div class="row">
+        {% endif %}
+            <div class="lesson">
+                <h2 class="lesson-title">{{ lesson.title }}</h2>
+                <p class="lesson-content">{{ lesson.content }}</p>
+            </div>
+        {% if forloop.counter|divisibleby:2 or forloop.last %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+
+<style>
+
+.container-lesson {
+    text-align: center;
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+}
+
+.row {
+    display: contents; 
+}
+
+.lesson-title {
+    color:#FF6969;
+    font-size: 2.5rem;
+    font-weight: bold;
+    padding: 30px 10%;  // adjust as needed
+    margin-top: 30px;
+}
+
+.lesson-content {
+    color:black;
+    font-size: 1.2rem;
+    padding: 0 15%;  // adjust as needed
+}
+
+
+	.text{
+		color: #116D6E;
+		padding-top:10px;
+	}
+
+	.embed-responsive.embed-responsive-16by9 {
+	    width: 100%;
+	    height: 100%;
+	}
+
+
+    .course-info {
+        text-align: center;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .course-title {
+        margin-top: 20px;
+        font-size: 3.2rem;
+        font-weight: bold;
+        color: #116D6E;
+        text-decoration: underline;
+    }
+
+    .course-description {
+        font-size: 16px;
+        color: black;
+        padding: 30px 20%;
+	}
+	.course-description-question{
+		font-size: 2.5rem;
+        color: crimson;
+        padding: 0 20%;
+        padding-bottom: 20px;
+	}
+	.course-description-answer{
+		font-size: 16px;
+        color: black;
+        padding: 0 20%;
+        padding-bottom: 20px;
+	}
+
+
+	/*	slick style	*/
+ 	.slick-slider {
+        position: relative;
+        padding: 0 40px;
+    }
+
+    .slick-slider .slick-slide {
+        margin: 0 20px;
+     }
+
+    /* button style */
+    .slick-slider .slick-prev,
+    .slick-slider .slick-next {
+        font-size: 0;
+        line-height: 0;
+        position: absolute;
+        top: 50%;
+        display: block;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        transform: translate(0, -50%);
+        cursor: pointer;
+        color: transparent;
+        border: none;
+        outline: none;
+        background: #888888;
+        border-radius: 50%;
+        z-index: 2;
+    }
+    .slick-slider .slick-prev {
+        left: -20px;
+    }
+    .slick-slider .slick-next {
+        right: -20px;
+    }
+    .slick-slider .slick-prev:before,
+    .slick-slider .slick-next:before {
+        font-family: 'Font Awesome 5 Free';
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 1;
+        color: white;
+        opacity: .75;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .slick-slider .slick-prev:before {
+        content: '\f104';
+    }
+    .slick-slider .slick-next:before {
+        content: '\f105';
+    }
+</style>
+
+
+<!-- js for slick slider(image slide_show) -->
+<script>
+        $(document).ready(function(){
+            $('.slick-slider').slick({
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 2000,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+        });
+</script>   
+{% endblock %}
