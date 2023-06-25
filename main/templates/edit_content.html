@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="mb-5">Select the section to edit</h1>
+                <div class="d-flex flex-lg-row flex-column justify-content-center">
+                    <a href="{% url 'edit_courses' %}" class="button-section btn-lg m-2">Edit Courses</a>
+                    <a href="{% url 'edit_lessons' %}" class="button-section btn-lg m-2">Edit Lessons</a>
+                    <a href="{% url 'edit_quizzes' %}" class="button-section btn-lg m-2">Edit Quizzes</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="d-flex flex-lg-row flex-column justify-content-center">
+                    <a href="{% url 'add_course' %}" class="button-section btn-lg m-2">Add Course</a>
+                    <a href="{% url 'add_lessons' %}" class="button-section btn-lg m-2">Add Lesson</a>
+                    <a href="{% url 'add_quiz' %}" class="button-section btn-lg m-2">Add Quizz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<style>
+
+.button-section{
+  background-color: #B31312;
+  display: block;
+  margin: 20px auto 0px ;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 30px 100px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+  font-size: 1.6rem;
+  margin: 20px auto 40px ;
+}
+.button-section:hover{
+    background-color: #483D8B;
+}
+
+</style>
+{% endblock %}

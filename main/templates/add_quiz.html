@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="POST" class="quiz_form">
+    <h2>Add a Quiz</h2>
+    {% csrf_token %}
+    <div>
+        {{ quiz_form.lesson|as_crispy_field }}
+        {{ quiz_form.question|as_crispy_field }}
+    </div>
+
+    <h2>Add Options</h2>
+    {{ formset.management_form }}
+    {% for form in formset %}
+        <div>
+            {{ form.answer|as_crispy_field }}
+            {{ form.is_correct|as_crispy_field }}
+        </div>
+    {% endfor %}
+
+    <button class="quiz_button">Add Quiz</button>
+</form>
+
+
+<div class = "quizzes-display">
+    <table>
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th class="quiz-column">Quiz</th>
+                <th>Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quiz in quizzes %}
+                <tr>
+                    <td rowspan="{{ quiz.quizoption_set.count }}">{{ quiz.lesson }}</td>
+                    <td rowspan="{{ quiz.quizoption_set.count }}">{{ quiz.question }}</td>
+                    <td>{{ quiz.quizoption_set.first.answer }}</td>
+                </tr>
+                {% for option in quiz.quizoption_set.all|slice:"1:" %}
+                    <tr><td>{{ option.answer }}</td></tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<a href="{% url 'edit_quizzes' %}" class="edit-button">Edit Quizzes</a>
+
+<style>
+
+th.quiz-column{
+    width: 45%; /* Change this value to adjust the width as per your need */
+}
+
+.quizzes-display{
+    width: 70%;
+    margin: 0 auto;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+td, th{
+    border: 1px solid #ddd;
+    padding:8px;
+}
+th{
+    font-size: 1.3rem;
+    color: darkred;
+}
+td{
+    font-size: 1.2rem;
+}
+
+.quiz_form label {
+    font-size: 1.3rem;
+    color: #7E1717;
+}
+
+.quiz_form {
+    width: 70%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    background-color: #F9FBE7;
+    padding: 20px;
+    margin-top: 50px;
+}
+.quiz_button {
+    display: block;
+    background-color: #FF78C4;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: 0.25px;
+}
+
+.quiz_button:hover {
+    background-color: #E1AEFF;
+}
+.edit-button {
+    display: block;
+    background-color: #366473;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+.edit-button:hover {
+    background-color: #483D8B;
+}
+</style>
+
+
+
+{% endblock %}

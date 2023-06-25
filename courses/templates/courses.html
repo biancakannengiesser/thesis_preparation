@@ -30,9 +30,15 @@
 	        	<p class="member_subject"> N/A</p>
 	        	{% endif %}
 	        </div>
+            {% if user.is_authenticated %}
 			<a href="{% url 'course_detail' course.id %}">
                 <button class = "go_to_course_btn">Go to course</button>
             </a>
+            {% else %}
+            <a href="{% url 'login' %}">
+                <button class = "go_to_course_btn">Log in to view course</button>
+            </a>
+            {% endif %}
 		</div>
 	</div>
 

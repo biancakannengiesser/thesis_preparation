@@ -5,6 +5,7 @@ from django.db.models import Q
 class Course(models.Model):
     title = models.CharField(max_length=200)
     image = models.ImageField(blank=True)
+    gif = models.ImageField(blank=True)
     description = models.TextField()
     specific_content = models.TextField(blank=True)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -14,7 +15,7 @@ class Course(models.Model):
             self.teacher = User.objects.filter(Q(is_superuser=True) | Q(is_staff=True)).first()
         super().save(*args, **kwargs)
 
-    def __str__(self):  # New method
+    def __str__(self): 
         return self.title
 
 class Image(models.Model):
@@ -43,7 +44,7 @@ class Lesson(models.Model):
         return f"{self.course} - {self.title}"
 
 class Quiz(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Course, on_delete=models.CASCADE)
     question = models.TextField()
 
     def __str__(self):
@@ -56,3 +57,12 @@ class QuizOption(models.Model):
 
     def __str__(self):
         return f"{self.quiz.question} Option({self.id})"
+
+class QuizCompletion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)  # This has been changed from `quiz`
+    score = models.IntegerField()
+    completion_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'course', 'completion_date')

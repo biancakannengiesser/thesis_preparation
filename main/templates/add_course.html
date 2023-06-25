@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class = "course-form" enctype="multipart/form-data">
+	<h2>Add a course</h2>
+    {% csrf_token %}
+    <div>
+        {{ form.title|as_crispy_field }}
+        {{ form.image|as_crispy_field }}
+        {{ form.gif|as_crispy_field }}
+        {{ form.description|as_crispy_field }}
+        {{ form.specific_content|as_crispy_field }}
+        {{ form.teacher|as_crispy_field }}
+    </div>
+    {{ formset.management_form }}
+    {% for image_form in formset %}
+        <div>
+            {{ image_form.image|as_crispy_field }}
+        </div>
+    {% endfor %}
+    <button class="course_button">Add Course</button>
+</form>
+
+<div class="courses-display">
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Course Content</th>
+                <th>Teacher</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.description }}</td>
+                    <td>{{ course.specific_content }}</td>
+                    <td>{{ course.teacher }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'courses' %}" class="edit-button go-to">View Courses</a>
+<a href="{% url 'edit_courses' %}" class="edit-button">Edit Courses</a>
+
+<style>
+
+.courses-display{
+    width: 70%;
+    margin: 0 auto;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+table{
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+td, th{
+    border: 1px solid #ddd;
+    padding:8px;
+}
+th{
+    font-size: 1.3rem;
+    color: darkred;
+}
+td{
+    font-size: 1.2rem;
+}
+	
+.course-form label {
+    font-size: 1.3rem;
+    color: #7E1717;
+    margin-top: 10px;
+}
+
+.course-form {
+    width: 70%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    background-color: #F9FBE7;
+    padding: 20px;
+    margin-top: 50px;
+}
+.course_button {
+    display: block;
+    background-color: #FF78C4;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: 0.25px;
+}
+
+.course_button:hover {
+    background-color: #E1AEFF;
+}
+.edit-button {
+    display: block;
+    background-color: #366473;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+.edit-button:hover {
+    background-color: #483D8B;
+}
+.go-to{
+	background-color:#D25380;
+}
+.go-to:hover{
+	background-color:#146C94;
+}
+</style>
+
+{% endblock %}

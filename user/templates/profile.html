@@ -3,45 +3,90 @@
 
 {% block content %}
 
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
 <div class="container">
-    <div class="row profile-card">
+    <div class="row profile-card justify-content-center">
         <!-- Profile Card -->
         <!-- User Details Card -->
-        <div class="col-md-8 mt-4 mt-md-0">
+        <div class="col-md-7 mt-4 mt-md-0">
             <div class="card">
                 <div class="card-header">
                     <h5>Personal Information</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>First Name:</strong> {{ user.first_name }}</p>
-                    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    <p><strong>Username:</strong> {{ user.username }}</p>
-                    <p><strong>Phone Number:</strong> {{ user.userprofile.phone }}</p>
+                    <p><strong class = "info-card">First Name:</strong> {{ user.first_name }}</p>
+                    <p><strong class = "info-card">Last Name:</strong> {{ user.last_name }}</p>
+                    <p><strong class = "info-card">Email:</strong> {{ user.email }}</p>
+                    <p><strong class = "info-card">Username:</strong> {{ user.username }}</p>
+                    <p><strong class = "info-card">Phone Number:</strong> {{ user.userprofile.phone }}</p>
+                    <p><strong class = "info-card">Your points:</strong> {{ user.userprofile.total_score }}</p>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 40px;">
-                <a href="#" class="btn btn-primary profile-button">Edit Profile</a>
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary profile-button">Edit Profile</a>
             </div>
         </div>
 
-                <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
+            <div class="col-md-4 mt-5 mt-md-0">
+                <div class="card text-center">
 
-                {% if user.image %}
-                <img class="card-img-top" src="{{ user.userprofile.image.url }}" alt="Profile image" style="border-radius: 50%;">
-                {% else %}
-                <img class = "not_available_image" src="{% static 'user/images/symbol.png' %}" alt="Staff Member Image">
-                {% endif %}
+                    {% if user.userprofile.image %}
+                    <img class="card-img-top" src="{{ user.userprofile.image.url }}" alt="Profile image" style="border-radius: 50%;">
+                    {% else %}
+                    <img class = "not_available_image" src="{% static 'user/images/symbol.png' %}" alt="Staff Member Image">
+                    {% endif %}
 <!--                 <div class="card-body">
                     <h5 class="card-title">{{ user.username }}</h5>
                 </div> -->
+                </div>
+            </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-9">  <!-- Adjust this to change card width -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Completed Courses</h5>
+                </div>
+                <div class="card-body">
+                    {% for completion in quiz_completions %}
+                        <p><strong class="courses-card">Course Title:</strong> {{ completion.course.title }}</p>
+                        <p><strong class="courses-card">Score:</strong> {{ completion.score }}</p>
+                        <p><strong class="courses-card">Completion Date:</strong> {{ completion.completion_date }}</p>
+                        <hr>
+                    {% empty %}
+                        <p class="text-center">No completed courses yet.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+
+
 <style>
+    h5{
+        font-weight: bold;
+    }
+    .info-card{
+        color: #1B9C85;
+    }
+    .courses-card{
+        color: #D25380;
+    }
     .container {
         margin-top: 50px;
     }
@@ -61,6 +106,9 @@
         transition: 0.25s;
         outline: none;
         cursor: pointer;
+    }
+    .card-body p{
+        font-size: 1.2rem;
     }
 </style>
 

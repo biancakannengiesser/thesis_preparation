@@ -6,33 +6,38 @@
 
 <h1>List of users and account information</h1>
 
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Date Joined</th>
-      <th>Last Login</th>
-      <th>Admin</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in users %}
-    <tr>
-      <td>{{ user.get_full_name }}</td>
-      <td>{{ user.date_joined }}</td>
-      <td>{{ user.last_login }}</td>
-      <td>
-        {% if user.is_staff %}
-          <span style="color:green;">✔️</span>
-        {% else %}
-          <span style="color:red;">❌</span>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Date Joined</th>
+        <th>Last Login</th>
+        <th>Admin</th>
+        <th>Profile</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.get_full_name }}</td>
+        <td>{{ user.date_joined }}</td>
+        <td>{{ user.last_login }}</td>
+        <td>
+          {% if user.is_staff %}
+            <span style="color:green;">✔️</span>
+          {% else %}
+            <span style="color:red;">❌</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'view_profile_as_admin' user.id %}">Go to Profile</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 
 <style>
@@ -66,7 +71,17 @@ td {
   border: 2px solid #A6D0DD;
   padding: 15px;
   padding-top: 20px;
+/*  font-size: 1.1rem;*/
 }
+td a{
+  color: black;
+}
+
+.table-container {
+    width: 100%;
+    padding: 0 20px;
+    overflow-x: auto;
+  }
 </style>
 
 

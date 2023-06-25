@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Image, Video, Lesson, Quiz, QuizOption
+from .models import Course, Image, Video, Lesson, Quiz, QuizOption, QuizCompletion
 
 class QuizOptionInline(admin.TabularInline):  
     model = QuizOption
@@ -23,12 +23,13 @@ class LessonInline(admin.TabularInline):
 
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'teacher', 'description')
-    inlines = [LessonInline]
+    inlines = [LessonInline, QuizInline]
 
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Image)
 admin.site.register(Video)
-admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Lesson)
 admin.site.register(Quiz, QuizAdmin)
 admin.site.register(QuizOption)
+admin.site.register(QuizCompletion)

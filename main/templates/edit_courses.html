@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+    <div class="container py-5">
+        <div class="accordion" id="courseAccordion">
+            {% for course in courses %}
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="heading{{ course.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ course.id }}" aria-expanded="false" aria-controls="collapse{{ course.id }}">
+                        Course: <strong> {{ course.title }}</strong>
+                    </button>
+                </h2>
+                <div id="collapse{{ course.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ course.id }}" data-bs-parent="#courseAccordion">
+                    <div class="accordion-body">
+                       <form action="{% url 'edit_courses'%}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3 row">
+                                <label class="col-sm-2 col-form-label">Title</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="title" name="course-{{course.id}}-title" value="{{ course.title }}">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3 row">
+                                <label class="col-sm-2 col-form-label">Description</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control bigger-box" name="course-{{course.id}}-description" >{{ course.description }}</textarea>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3 row">
+                                <label class="col-sm-2 col-form-label">Specific Content</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control bigger-box" name="course-{{course.id}}-specific_content" >{{ course.specific_content }}</textarea>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3 row">
+						        <label class="col-sm-2 col-form-label">Teacher</label>
+						        <div class="col-sm-10">
+						            <select name="course-{{course.id}}-teacher" class="form-control">
+						                {% for teacher in staff_users %}
+										    <option value="{{ teacher.id }}" {% if course.teacher and teacher.id == course.teacher.id %} selected {% endif %}>{{ teacher.username }}</option>
+										{% endfor %}
+
+						            </select>
+						        </div>
+						    </div>
+						    <hr>
+							<div class="mb-3 row">
+							    <label class="col-sm-2 col-form-label">Course description image</label>
+							    <div class="col-sm-10">
+							        {% if course.image %}
+							            <img id="courseImg" src="{{ course.image.url }}" alt="Course Image" style="width: 200px; height: 200px;">
+							            <input type="file" id="id_image" name="image" accept="image/*" onchange="loadImage(event)" style="display: block; margin-top: 15px;">
+							            <input type="checkbox" name="delete_image"> Delete Image
+							        {% else %}
+							            <p>No image uploaded</p>
+							            <img id="courseImg" style="width: 200px; height: 200px; display: none;">
+							            <input type="file" id="id_image" name="image" accept="image/*" onchange="loadImage(event)" style="display: block; margin-top: 15px;">
+							        {% endif %}
+							    </div>
+							</div>
+							<hr>
+							<div class="mb-3 row">
+							    <label class="col-sm-2 col-form-label">Quiz Background</label>
+							    <div class="col-sm-10">
+							        {% if course.gif %}
+							            <img id="courseGif" src="{{ course.gif.url }}" alt="Course Gif" style="width: 200px; height: 200px;">
+							            <input type="file" id="id_gif" name="gif" accept="image/*" onchange="loadGif(event)" style="display: block; margin-top: 15px;">
+							            <input type="checkbox" name="delete_gif"> Delete Gif
+							        {% else %}
+							            <p>No gif uploaded</p>
+							            <img id="courseGif" style="width: 200px; height: 200px; display: none;">
+							            <input type="file" id="id_gif" name="gif" accept="image/*" onchange="loadGif(event)" style="display: block; margin-top: 15px;">
+							        {% endif %}
+							    </div>
+							</div>
+							<hr>
+							<div class="mb-3 row">
+							    <label class="col-sm-2 col-form-label">Video URL</label>
+							    <div class="col-sm-10">
+							        <input type="url" class="form-control" name="course-{{course.id}}-video_url" value="{{ course.videos.first.url }}">
+							    </div>
+							</div>
+							<hr>
+							<div id="image-inputs">
+							    {% for image in course.images.all %}
+							    <div class="mb-3 row">
+							        <label class="col-sm-2 col-form-label">Image Slider {{ forloop.counter }}</label>
+							        <div class="col-sm-10">
+							            <img id="courseImage{{ forloop.counter }}" src="{{ image.image.url }}" alt="Course Image" style="width: 40%; height: 200px;">
+							            <input type="file" name="image_{{ image.id }}" accept="image/*" onchange="loadImage(event, 'courseImage{{ forloop.counter }}')" style="display: block; margin-top: 15px;">
+							            <input type="checkbox" name="delete_image_{{ image.id }}"> Delete Image
+							            <hr>
+							        </div>
+							    </div>
+							    {% endfor %}
+							<button type="button" class="add-image-button button-style">Add slider image</button>
+							</div>
+                            <button type="submit" id = "save-changes" class="button-style">Save changes</button>
+                            <button type="reset"  id = "cancel" class="button-style" onclick="location.reload();">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+<style>
+	
+.bigger-box {
+    height: 100px;  /* adjust as needed */
+}
+
+.col-form-label{
+	color: #FF2171;
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+
+.accordion-button{
+	font-size: 1.3rem;
+
+}
+
+.col-sm-10, .form-control{
+	font-size: 1rem;
+}
+#save-changes{
+	background-color: #3BAF9F;
+}
+#cancel{
+	background-color: #19A7CE;
+}
+.add-image-button{
+	background-color: #FEA1A1;
+}
+.button-style{
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 13px 30px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+</style>
+
+<script>
+document.querySelectorAll('.add-image-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const imageInputs = this.parentElement;
+        const newImageInput = document.createElement('div');
+        const imageCount = imageInputs.children.length;
+
+        newImageInput.classList.add('mb-3', 'row');
+        newImageInput.innerHTML = `
+            <label class="col-sm-2 col-form-label">Image Slider ${imageCount}</label>
+            <div class="col-sm-10">
+                <img id="courseImage${imageCount}" style="width: 200px; height: 200px; display: none;">
+                <input type="file" name="image_${imageCount}" accept="image/*" onchange="loadImage(event, 'courseImage${imageCount}')">
+            </div>
+        `;
+
+        imageInputs.insertBefore(newImageInput, this);
+    });
+});
+
+
+</script>
+
+
+<script>
+    var loadImage = function(event) {
+        var output = document.getElementById('courseImg');
+        output.style.display = "block";
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>
+
+<script>
+    var loadGif = function(event) {
+        var output = document.getElementById('courseGif');
+        output.style.display = "block";
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>
+{% endblock %}

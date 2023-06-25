@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="POST" class="lesson_form">
+    <h2>Add a Lesson</h2>
+    {% csrf_token %}
+    <div>
+        {{ form.course|as_crispy_field }}
+        {{ form.title|as_crispy_field }}
+        {{ form.content|as_crispy_field }}
+    </div>
+    <button class="lesson_button">Add Lesson</button>
+</form>
+
+<div class = "lessons-display">
+    <table>
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Lesson</th>
+                <th>Content</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.course }}</td>
+                    <td>{{ lesson.title }}</td>
+                    <td>{{ lesson.content }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'edit_lessons' %}" class="edit-button">Edit Lessons</a>
+
+<style>
+
+.lessons-display{
+    width: 75%;
+    margin: 0 auto;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+td, th{
+    border: 1px solid #ddd;
+    padding:8px;
+}
+th{
+    font-size: 1.3rem;
+    color: darkred;
+}
+td{
+    font-size: 1.2rem;
+}
+
+.lesson_button {
+    display: block;
+    background-color: #FF78C4;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: 0.25px;
+}
+
+.lesson_button:hover {
+    background-color: #E1AEFF;
+}
+
+.lesson_form {
+    width: 70%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    background-color: #F0EDD4;
+    padding: 20px;
+    margin-top: 50px;
+}
+
+.lesson_form label {
+    font-size: 1.3rem;
+    color: #7E1717;
+}
+
+.edit-button {
+    display: block;
+    background-color: #366473;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+.edit-button:hover {
+    background-color: #483D8B;
+}
+</style>
+
+{% endblock %}

@@ -9,6 +9,7 @@ class UserProfile(models.Model):
     subject = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=10, blank=True)
     cv = models.FileField(blank = True)
+    total_score = models.IntegerField(default=0)
 
 
 class TeamMemberRequest(models.Model):

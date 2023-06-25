@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-4 mt-md-0">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Edit Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="edit-profile-form" method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <h3 class="field-title">Username</h3>
+                        <p class="current-info"><strong>Current username:</strong> {{ user.username }}</p>
+                        <label for="username" class="labels"><strong>New username:</strong></label>
+                        <input id="username" name="username" type="text" placeholder="New Username">
+                        <hr>
+                        <h3 class="field-title">Email</h3>
+                        <p class="current-info"><strong>Current email:</strong> {{ user.email }}</p>
+                        <label for="email" class="labels"><strong>New email:</strong></label>
+                        <input id="email" name="email" type="email" placeholder="New Email">
+                        <hr>
+                        <h3 class="field-title">First Name</h3>
+                        <p class="current-info"><strong>Current first name:</strong> {{ user.first_name }}</p>
+                        <label for="first_name" class="labels"><strong>New first name:</strong></label>
+                        <input id="first_name" name="first_name" type="text" placeholder="New First Name">
+                        <hr>
+                        <h3 class="field-title">Last Name</h3>
+                        <p class="current-info"><strong>Current last name:</strong> {{ user.last_name }}</p>
+                        <label for="last_name" class="labels"><strong>New last name:</strong></label>
+                        <input id="last_name" name="last_name" type="text" placeholder="New Last Name">
+                        <hr>
+                        <h3 class="field-title">Phone Number</h3>
+                        <p class="current-info"><strong>Current phone number:</strong> {{ user.userprofile.phone }}</p>
+                        <label for="phone" class="labels"><strong>New phone number:</strong></label>
+                        <input id="phone" name="phone" type="tel" placeholder="New Phone Number" pattern="[0-9]{10}" title="Phone number should be 10 digits long">
+                        <hr>
+                        <h3 class="field-title">Profile Picture</h3> <br>
+                        <input id="profile_picture" name="profile_picture" type="file" accept="image/*">
+                        <hr>
+                        <h3 class="field-title">Password Change</h3>
+                        <label for="current_password" class="labels"><strong>Current password:</strong></label>
+                        <input id="current_password" name="current_password" type="password" placeholder="Current Password">
+                        <i id="togglePasswordVisibility" class="fas fa-eye"></i>
+                        <br>
+                        <label for="new_password" class="labels"><strong>New password:</strong></label>
+                        <input id="new_password" name="new_password" type="password" placeholder="New Password">
+                        <i id="togglePasswordVisibility" class="fas fa-eye"></i>
+
+
+
+                    </form>
+                </div>
+            </div>
+            <div class="buttons-container">
+                <button type="submit" form="edit-profile-form" class="submit-btn">Save Changes</button>
+                <button type="button" onclick="location.href='{% url 'profile' %}';" class="submit-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.field-title {
+    font-size: 1.5em;
+    text-decoration: underline;
+    color: #E86A33;
+}
+
+.current-info, label {
+    margin: 0.5em 0;
+}
+
+.container{
+    margin-top:3%;
+}
+.current-info, .labels{
+    font-size: 1.2rem;
+}
+input{
+    border-radius: 5px;
+    text-align: center;
+}
+.buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+.submit-btn {
+  background-color: #BE5A83;
+  display: block;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 14px 100px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25px;
+  flex: 1;
+  flex-basis: 50%;
+  margin: 10px;
+}
+.submit-btn:hover{
+    background-color: #917FB3;
+}
+.error {
+    color: red; /* or any other color you want for error messages */
+}
+
+@media (min-width: 576px) { /* modify this breakpoint as needed */
+        .submit-btn {
+            flex-basis: auto; /* this will let buttons to be in the same row on larger screens */
+        }
+    }
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon .fas {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.input-with-icon {
+    padding-right: 25px; /* adjust as needed */
+}
+
+
+</style>
+    
+<script>
+    const passwordInputs = Array.from(document.querySelectorAll('input[type="password"]'));
+
+    passwordInputs.forEach((passwordInput) => {
+        const toggleButton = passwordInput.nextElementSibling;
+        
+        toggleButton.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.className = 'fas fa-eye';
+            }
+        });
+    });
+</script>
+
+
+
+{% endblock %}
