@@ -15,7 +15,7 @@
 
     <div class="container py-5">
         <div class="accordion" id="courseAccordion">
-            {% for course in courses %}
+            {% for course, forms in quiz_forms %}
             <div class="accordion-item mb-3">
                 <h2 class="accordion-header" id="headingCourse{{ course.id }}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCourse{{ course.id }}" aria-expanded="false" aria-controls="collapseCourse{{ course.id }}">
@@ -24,62 +24,49 @@
                 </h2>
                 <div id="collapseCourse{{ course.id }}" class="accordion-collapse collapse" aria-labelledby="headingCourse{{ course.id }}" data-bs-parent="#courseAccordion">
                     <div class="accordion-body">
-                      {% if course.quiz_set.all %}
+                      {% if forms %}
                         <div class="accordion" id="quizAccordion{{ course.id }}">
-                            {% for quiz in course.quiz_set.all %}
+                            {% for quiz_form, option_forms in forms %}
                             <div class="accordion-item mb-3">
-                                <h2 class="accordion-header" id="headingQuiz{{ quiz.id }}">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuiz{{ quiz.id }}" aria-expanded="false" aria-controls="collapseQuiz{{ quiz.id }}">
-                                        Quiz: {{ quiz.question }}
+                                <h2 class="accordion-header" id="headingQuiz{{ quiz_form.instance.id }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuiz{{ quiz_form.instance.id }}" aria-expanded="false" aria-controls="collapseQuiz{{ quiz_form.instance.id }}">
+                                        Quiz: {{ quiz_form.instance.question }}
                                     </button>
                                 </h2>
-                                <div id="collapseQuiz{{ quiz.id }}" class="accordion-collapse collapse" aria-labelledby="headingQuiz{{ quiz.id }}" data-bs-parent="#quizAccordion{{ course.id }}">
+                                <div id="collapseQuiz{{ quiz_form.instance.id }}" class="accordion-collapse collapse" aria-labelledby="headingQuiz{{ quiz_form.instance.id }}" data-bs-parent="#quizAccordion{{ course.id }}">
                                     <div class="accordion-body">
-                                        <form action="{% url 'edit_quizzes' %}" method="POST">
+                                        <form action="{% url 'edit_quizzes' %}" method="POST" class='form'>
                                             {% csrf_token %}
+                                            <input type="hidden" name="{{ quiz_form.instance.pk }}" value="{{ quiz_form.instance.pk }}">
+
                                             <div class="mb-3 row">
                                                 <label class="col-sm-2 col-form-label">Quiz Question</label>
                                                 <div class="col-sm-10">
-                                                    <textarea class="form-control" name="quiz-{{quiz.id}}-question" rows="4">{{ quiz.question }}</textarea>
+                                                    <input type="text" name="quiz-{{ quiz_form.instance.id }}-question" value="{{ quiz_form.instance.question }}" />
                                                 </div>
                                             </div>
                                             <hr>
-                                            {% for option in quiz.quizoption_set.all %}
+                                            {% for quiz_option_form in option_forms %}
                                                 <div class="mb-3 row">
                                                     <label class="col-sm-2 col-form-label">Quiz Answer Option {{ forloop.counter }}</label>
                                                     <div class="col-sm-10">
-                                                        <input type="hidden" name="option-{{option.id}}-id" value="{{ option.id }}">
-                                                        <textarea class="form-control" name="option-{{option.id}}-answer" rows="2">{{ option.answer }}</textarea>
+                                                        <input type="text" name="option-{{ quiz_option_form.instance.id }}-answer" value="{{ quiz_option_form.instance.answer }}" />
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row">
                                                     <div class="col-sm-10 offset-sm-2">
-                                                        <input type="checkbox" name="option-{{option.id}}-is-correct" id="option-{{option.id}}-is-correct" {% if option.is_correct %}checked{% endif %}>
-                                                        <label for="option-{{option.id}}-is-correct">Correct answer</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3 row">
-                                                    <div class="col-sm-10 offset-sm-2">
-                                                        <input type="checkbox" name="option-{{option.id}}-delete" id="option-{{option.id}}-delete">
-                                                        <label for="option-{{option.id}}-delete">Delete this option</label>
+                                                        <input type="checkbox" name="option-{{ quiz_option_form.instance.id }}-is_correct" value="{{ quiz_option_form.instance.is_correct }}" {% if quiz_option_form.instance.is_correct %}checked{% endif %} /><label for="{{ quiz_option_form.is_correct.id_for_label }}">Correct answer</label>
                                                     </div>
                                                 </div>
                                                 <hr>
                                             {% endfor %}
-                                           <button type="button" class="add-option button-style" data-quiz-id="{{ quiz.id }}">Add another option</button>
-                                            <hr>
-                                            <div class="mb-3 row">
-                                                <div class="col-sm-2">
-                                                    <input type="hidden" name="quiz-{{quiz.id}}-id" value="{{ quiz.id }}">
-                                                    <input type="checkbox" name="quiz-{{quiz.id}}-delete" id="quiz-{{quiz.id}}-delete">
-                                                    <label for="quiz-{{quiz.id}}-delete">Delete this quiz</label>
-                                                </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="quiz-{{quiz_form.instance.id}}-delete">
+                                                <label class="form-check-label">Delete this quiz</label>
                                             </div>
                                             <button type="submit" id="save" class="button-style">Save changes</button>
                                             <button type="reset" id="cancel" class="button-style" onclick="location.reload();">Cancel</button>
                                         </form>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -94,7 +81,6 @@
             {% endfor %}
         </div>
     </div>
-
 
 <style>
 .add-option{
@@ -126,39 +112,32 @@
     font-size: 1rem;
 }
 
+.form label {
+    font-size: 1.3rem;
+    color: #7E1717;
+}
+
+.form {
+    width: 80%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    background-color: #F8E8EE;
+    padding: 20px;
+    margin-top: 50px;
+}
+.form input, .form textarea {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 1.1rem;
+}
+.form textarea{
+    max-width: 600px;
+    width: 100% !important;
+    height: 100px;
+}
+
 </style>
-
-<script>
-var newOptionCounter = 0;
-
-document.querySelectorAll('.add-option').forEach(button => {
-    button.addEventListener("click", function(event) {
-        event.preventDefault();
-        
-        newOptionCounter++;
-        var newOption = document.createElement("div");
-        newOption.innerHTML = `
-        <div class="mb-3 row">
-            <label class="col-sm-2 col-form-label">Quiz Answer Option ${newOptionCounter}</label>
-            <div class="col-sm-10">
-                <textarea class="form-control" name="new-option-${newOptionCounter}-answer" rows="2"></textarea>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-sm-10 offset-sm-2">
-                <input type="checkbox" name="new-option-${newOptionCounter}-is-correct" id="new-option-${newOptionCounter}-is-correct">
-                <label for="new-option-${newOptionCounter}-is-correct">Correct answer</label>
-            </div>
-        </div>
-        `;
-        
-        var form = this.parentElement;
-        form.insertBefore(newOption, this);
-    });
-});
-
-</script>
-
 
 
 {% endblock %}

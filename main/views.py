@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from user.forms import NewTeamMemberRequestForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -8,17 +8,59 @@ from courses.models import Course, Image, Video, Lesson, Quiz, QuizOption
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-from .forms import LessonForm, QuizForm, QuizOptionForm, CourseForm, ImageFormSet, QuizOptionFormset
+from .forms import LessonForm, QuizForm, QuizOptionForm, CourseForm, ImageFormSet, QuizOptionFormset, ReportProblemForm, TestimonialForm
+from django.http import HttpResponse
+from django.forms import formset_factory
+from django.forms.models import modelformset_factory
+from django.contrib.auth.decorators import login_required
+from .models import ProblemReport, Testimonial
 
 
+def report_problem(request):
+    if request.method == "POST":
+        form = ReportProblemForm(request.POST)
+        if form.is_valid():
+            report = form.save()
+            subject = "Website Problem Reported"
+            message = form.cleaned_data.get('message')
+            sender = form.cleaned_data.get('email')
+            recipients = [settings.EMAIL_HOST_USER]
+            #send mail
+            email = EmailMessage(subject, message, sender, recipients)
+            num_sent = email.send()
 
+            #print(f"nr of emails sent: {num_sent}")
+            messages.success(request, "Your problem report has been sent!")
+            return redirect('home')
+    else:
+        form = ReportProblemForm()
+    return render(request, 'home.html', {'report_problem_form': form})
 
-# Create your views here.
+@login_required
+def reported_problems(request):
+    all_reports = ProblemReport.objects.all()
+    return render(request, 'reported_problems.html', {'all_reports': all_reports})
+
 
 def index(request):
     if request.user.is_authenticated:
+        if request.method == "POST":
+            form = TestimonialForm(request.POST)
+            if form.is_valid():
+                entered_username = form.cleaned_data.get('username')
+                if entered_username != request.user.username:
+                    messages.error(request, "The entered username does not match the logged-in user. Please try again.")
+                    return redirect('home')
+                else:
+                    form.save()
+                    messages.success(request, 'Thank you for your testimonial!')
+                    return redirect('home')
+        else:
+            form = TestimonialForm()
         name = request.user.first_name
-        return render(request, 'home.html', {'name': name})
+        testimonials = Testimonial.objects.order_by('-date_posted')
+        testimonials_count = testimonials.count()
+        return render(request, 'home.html', {'form': form, 'testimonials': testimonials, 'name': name, 'testimonials_count': testimonials_count})
     else:
         if request.method == "POST":
             form = NewTeamMemberRequestForm(request.POST, request.FILES)
@@ -73,6 +115,7 @@ def edit_content(request):
 
 def edit_courses(request):
     if request.method == "POST":
+        course = None 
         for key in request.POST:
             if key.startswith('course-'):
                 _, course_id, field = key.split('-')
@@ -114,18 +157,25 @@ def edit_courses(request):
                 course.save()
 
         for key in request.FILES:
-            if key.startswith('image_'):
+            if key.startswith('new_image_'):
+                # This is a new image, create a new Image instance
+                image_file = request.FILES.get(key)
+                if course is not None:
+                    Image.objects.create(course=course, image=image_file)
+                else:
+                    messages.error(request, 'Could not create new image - no associated course.')
+                    return redirect('edit_courses')
+            elif key.startswith('image_'):
+                # update existing image
                 image_id = "_".join(key.split('_')[1:])
                 image_file = request.FILES.get(key)
-                # find img by id
                 try:
                     image = Image.objects.get(id=image_id)
-                    #if found, update it
                     image.image = image_file
                     image.save()
                 except Image.DoesNotExist:
-                    # if not found, create a new one
-                    Image.objects.create(course=course, image=image_file)
+                    messages.error(request, 'Could not update image - image not found.')
+                    return redirect('edit_courses')
 
         for key in request.POST:
             if key.startswith('delete_image_'):
@@ -146,107 +196,128 @@ def edit_courses(request):
         return render(request, 'edit_courses.html', {'courses': courses, 'staff_users': staff_users})
 
 
+
 def edit_lessons(request):
     if request.method == "POST":
-        for key in request.POST:
+        for key, value in request.POST.items():
+            #print(key, value)
             if key.startswith('lesson-'):
                 _, lesson_id, field = key.split('-')
-                lesson = Lesson.objects.get(pk=lesson_id)
 
-                if field == 'title':
-                    lesson.title = request.POST.get(key)
-                elif field == 'content':
-                    lesson.content = request.POST.get(key)
-                elif field == 'delete':
-                    if request.POST.get(key) == 'on':
-                        lesson.delete()
-                        continue  # Skip saving, since we just deleted the lesson
-                
-                lesson.save()
+                if field == 'delete' and value == 'on':
+                    lesson = Lesson.objects.get(pk=lesson_id)
+                    lesson.delete()
+                else:
+                    lesson = Lesson.objects.get(pk=lesson_id)
+
+                    form_data = {
+                        'title': request.POST.get(f"lesson-{lesson_id}-title"),
+                        'content': request.POST.get(f"lesson-{lesson_id}-content"),
+                        'course': request.POST.get(f"lesson-{lesson_id}-course"),
+                    }
+
+                    form = LessonForm(form_data, instance=lesson)
+
+                    if not form.is_valid():
+                        print(form.errors)
+                        return HttpResponse('Form is invalid', status=400)
+
+                    # check delete box
+                    if request.POST.get(f"lesson-{lesson_id}-delete_audio") == 'on':
+                        lesson.audio_file.delete()  # delete the audio file
+
+                    # check for audio
+                    audio_file = request.FILES.get(f"lesson-{lesson_id}-audio_file")
+                    if audio_file is not None:
+                        lesson.audio_file = audio_file
+                        lesson.save()
+
+                    else:
+                        #print("nu")
+                        pass
+
+                    form.save()
 
         messages.success(request, 'Lessons updated successfully!')
         return redirect('edit_lessons')
 
     else:
         courses = Course.objects.all()
-        return render(request, 'edit_lessons.html', {'courses': courses})
+        lesson_forms = [(course, [LessonForm(instance=lesson) for lesson in course.lesson_set.all()]) for course in courses]
+        return render(request, 'edit_lessons.html', {'lesson_forms': lesson_forms})
+
+
 
 
 def edit_quizzes(request):
-    courses = Course.objects.all()
     if request.method == "POST":
-        # Loop through quizzes in the post data
         for key, value in request.POST.items():
-            if key.startswith("quiz"):
-                # Extract the quiz id
-                quiz_id = int(key.split('-')[1])
-                quiz = Quiz.objects.get(id=quiz_id)
+            print(key)
+            if key.startswith('quiz-'):
+                _, quiz_id, field = key.split('-')
+                
+                if field == 'delete' and value == 'on':
+                    quiz = Quiz.objects.get(pk=quiz_id)
+                    quiz.delete()
+                else:
+                    quiz = Quiz.objects.get(pk=quiz_id)
+                    form_data = {
+                        'question': request.POST.get(f"quiz-{quiz_id}-question"),
+                        'lesson': quiz.lesson_id,
+                    }
 
-                # Update quiz question
-                if key.endswith("question"):
-                    quiz.question = value
+                    form = QuizForm(form_data, instance=quiz)
+                    if form.is_valid():
+                        form.save()
+                    else:
+                        print(form.errors)
+                        return HttpResponse('Form is invalid', status=400)
 
-                # Check if the quiz should be deleted
-                elif key.endswith("delete"):
-                    if value.lower() == "on":
-                        quiz.delete()
-                        continue
+            elif key.startswith('option-'):
+                _, option_id, field = key.split('-')
+                print(option_id)
+                option = QuizOption.objects.get(pk=option_id)
 
-                quiz.save()
-
-            elif key.startswith("option"):
-                # Extract the option id
-                option_id = int(key.split('-')[1])
-                option = QuizOption.objects.get(id=option_id)
-
-                # Update option answer
-                if key.endswith("answer"):
-                    option.answer = value
-
-                # Check if the option should be deleted
-                elif key.endswith("delete"):
-                    if value.lower() == "on":
+                if field == 'delete':
+                    if value == 'on':
                         option.delete()
                         continue
 
-                # Check if the option is the correct answer
-                elif key.endswith("is-correct"):
-                    if value.lower() == "on":
-                        option.is_correct = True
-                    else:
-                        option.is_correct = False
+                form_data = {
+                    'id': option_id,
+                    'answer': request.POST.get(f"option-{option_id}-answer"),
+                    'is_correct': request.POST.get(f"option-{option_id}-is_correct"),
+                }
 
-                option.save()
+                form = QuizOptionForm(form_data, instance=option)
+                print("option:", option)
+                if form.is_valid():
+                    form.save()
+                else:
+                    print(form.errors)
+                    return HttpResponse('Form is invalid', status=400)
 
-            elif key.startswith("new-option"):
-                # Extract the option number
-                option_number = int(key.split('-')[2])
-
-                # Initialize is_correct to False
-                is_correct = False
-
-                # Update option answer
-                if key.endswith("answer"):
-                    answer = value
-
-                # Check if the option is the correct answer
-                elif key.endswith("is-correct"):
-                    if value.lower() == "on":
-                        is_correct = True
-
-                # Create new QuizOption
-                new_option = QuizOption(answer=answer, quiz=quiz, is_correct=is_correct)
-                new_option.save()
-
-        messages.success(request, "Changes saved successfully")
+        messages.success(request, 'Quizzes updated successfully!')
         return redirect('edit_quizzes')
 
-    return render(request, 'edit_quizzes.html', {'courses': courses})
+    else:
+        courses = Course.objects.all()
+        quiz_forms = []
+        for course in courses:
+            course_forms = []
+            for quiz in course.quiz_set.all():
+                quiz_form = QuizForm(instance=quiz)
+                quiz_option_formset = QuizOptionFormset(instance=quiz)
+                course_forms.append((quiz_form, quiz_option_formset))
+            quiz_forms.append((course, course_forms))
+
+        return render(request, 'edit_quizzes.html', {'quiz_forms': quiz_forms})
+
 
 
 def add_lessons(request):
     if request.method == 'POST':
-        form = LessonForm(request.POST)
+        form = LessonForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Lesson added successfully!")
@@ -282,6 +353,7 @@ def add_course(request):
             course = form.save()
             formset.instance = course
             formset.save()
+            messages.success(request, "Course added successfully!")
             return redirect('add_course')
     else:
         form = CourseForm()

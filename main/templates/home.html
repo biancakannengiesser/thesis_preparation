@@ -19,15 +19,18 @@
 
 		{% for message in messages %}
 
-		<h2> {{message}} </h2>
+			<h2> {{message}} </h2>
 
 		{% endfor %}
 
 	{% endif %}
 
-	<span> ABOUT US </span>
+	<span> Welcome to our website, where learning comes to life! </span>
 
-	<p> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+<p> At Junior Basics, we believe that education should be engaging, interactive, and fun. Our mission is to provide a platform where children can embark on an exciting journey of knowledge and exploration.</p>
+	<p>Designed with young minds in mind, our website offers a wide array of subjects to pique their curiosity and expand their horizons. Whether it's astronomy, geography, color theory, animals, or earth science, there's something for every eager learner.</p>
+	<p>The materials on our website are carefully curated and created by passionate educators who love what they do. They strive to make learning a delightful experience, with engaging content, captivating visuals, and interactive activities.</p>
+	<p>Our quizzes are not just about earning points, but about fostering a love for learning. Children can take quizzes as many times as they want, reinforcing their understanding and deepening their knowledge.</p>
 
 	<button class = "get_started"> <a href="{% url 'register' %}">Get Started</a> </button>
 </div>
@@ -40,6 +43,80 @@
 
 </div> -->
 
+<div class="subjects-section">
+  <h2>Our Subjects</h2>
+  <div class="subject-grid">
+    <div class="subject">
+      <img src="{% static 'main/images/universe.jpg' %}" alt="Astronomy icon">
+      <h3>Astronomy</h3>
+      <p>Explore the cosmos and discover the mysteries of the universe.</p>
+    </div>
+    <!-- Repeat for other subjects -->
+    <div class="subject">
+      <img src="{% static 'main/images/download.jpg' %}" alt="Astronomy icon">
+      <h3>Geography</h3>
+      <p>Travel the world from your screen and understand the physical features of different regions.</p>
+    </div>
+    <div class="subject">
+      <img src="{% static 'main/images/earth3.jpg' %}" alt="Astronomy icon">
+      <h3>Earth Science</h3>
+      <p>Delve into the dynamic earth and learn about its structure, processes, and resources.</p>
+    </div>
+    <div class="subject">
+      <img src="{% static 'main/images/colors3.jpg' %}" alt="Astronomy icon">
+      <h3>Color Theory</h3>
+      <p>Dive into the world of colors and explore their impacts on art, design, and emotions</p>
+    </div>
+   	<div class="subject">
+      <img src="{% static 'main/images/animals2.png' %}" alt="Astronomy icon">
+      <h3>Animals</h3>
+      <p>Discover the diverse world of animals, their habitats, behaviors, and adaptations.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- testimonials -->
+<h2 class = "testimonal-header">Testimonials</h2>
+<div class="testimonial-container">
+    {% for testimonial in testimonials %}
+    <div class="testimonial-card">
+        <p class="testimonial-content">{{ testimonial.testimonial }}</p>
+        <p class="testimonial-author">- {{ testimonial.username }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% if testimonials_count > 4 %}
+    <button id="toggle-view" class="view-button">View More</button>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+<p class="leave-testimonial-text">
+  <span>Do you want to leave a testimonial? 
+    <button type="button" class="btn testimonial-button" data-bs-toggle="modal" data-bs-target="#testimonialModal"> Click here</button>
+  </span>
+</p>
+
+{% endif %}
+
+<div class="modal fade" id="testimonialModal" tabindex="-1" aria-labelledby="testimonialModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testimonialModalLabel">Share Your Experience</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'home' %}">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="form_homepage">
 {% if not user.is_authenticated %}
@@ -79,20 +156,11 @@
 	height: 300px;
 }
 img{
-/*	width:250px;
-	height: 150px;*/
+
 	object-fit: cover;
 	object-position: bottom;
 	padding:5px;
 }
-/*.container{
-	display: flex;
-	max-width: 1400px;
-	width: 100%;
-	flex-wrap: wrap;
-	justify-content: center;
-}
-*/
 
 .homepage{
 	width: 100%;
@@ -105,6 +173,8 @@ img{
 	align-items: center;
 	margin-bottom: 100px;
 	text-align: center;
+	z-index: 20;
+	position: relative;
 }
 @media (max-width: 768px) {
   .homepage {
@@ -122,7 +192,7 @@ img{
 .homepage h1{
 	text-align: center;
 	color: hotpink; 
-	padding: 10px 0px 10px 0px;
+	padding: 5px 0px 10px 0px;
 	font-size: 3.7rem;
 }
 .form_homepage h1{
@@ -147,7 +217,7 @@ img{
 	max-width: 1200px;
 	margin: 0px auto;
 	color: crimson;
-	font-size: 1.5rem;
+	font-size: 1.4rem;
 	padding: 20px 20px 0px 20px;
 }
 .get_started{
@@ -197,7 +267,212 @@ img{
   	padding: 20px;
   	margin-top: 50px;
 }
+
+
+/*service section*/
+
+.subjects-section {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.subject-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+}
+
+.subject {
+  flex: 0 1 auto;
+  max-width: 250px;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.subject:hover {
+  transform: scale(1.2);
+}
+
+.subject img {
+  width: 100%;
+  height: auto;
+}
+
+.subject h3 {
+  margin: 20px 0;
+}
+.subjects-section h2{
+	margin-bottom: 40px;
+	font-size: 3rem;
+	color: #213363;
+}
+
+
+/*testimonials*/
+/*.testimonial-button {
+    background-color: #DAA520;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+    width: 250px;
+    margin-bottom: 30px;
+}
+
+.testimonial-button:hover {
+    background-color: #008000;
+    transform: scale(1.1);
+}*/
+
+/* Style the modal to be a bit bigger */
+.modal-dialog {
+    max-width: 700px; /* Change this to the width you prefer */
+    margin: 30px auto; /* Centers the modal vertically and horizontally */
+}
+
+/* Style the form inside the modal */
+.modal-body form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Style the submit button */
+.modal-body form button[type="submit"] {
+    background-color: #DAA520;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+    align-self: flex-start; /* Aligns the button to the start of the form */
+}
+
+.modal-body form button[type="submit"]:hover {
+    background-color: #008000;
+    transform: scale(1.1);
+}
+
+
+/*testimonial display*/
+.testimonial-content {
+    font-size: 1.2rem;
+}
+
+.testimonal-header{
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 3rem;
+}
+
+.testimonial-author {
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: right;
+}
+
+
+.testimonial-container {
+  display: grid;
+  grid-template-columns: repeat(3, 300px);
+  grid-gap: 40px;
+  justify-items: center;
+  justify-content: center;
+}
+
+.testimonial-card {
+  background-image: url('{% static "main/images/pastels.png" %}');
+  color: black;
+  padding: 20px;
+  border-radius: 50px;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.view-button {
+  display: block;
+  width: 200px;
+  padding: 10px;
+  margin: 20px auto;
+  text-align: center;
+  background-color: transparent;
+  color: #333;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.view-button:hover {
+  background-color: #F0F0F0;
+  transform: scale(1.1);
+}
+
+.leave-testimonial-text {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.testimonial-button {
+  padding: 0;
+  background: none;
+  border: none;
+  color: #CD1818;
+  cursor: pointer;
+  font-size: 1.4rem;
+}
+
+.testimonial-button:focus,
+.testimonial-button:hover {
+  text-decoration: underline;
+  outline: none;
+  color: #FF0060;
+}
+.leave-testimonial-text {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: center;
+  font-size: 1.4rem;
+  white-space: nowrap; /* add this line */
+}
+@media screen and (max-width: 1400px) {
+  .testimonial-container {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .subject-grid {
+    flex-direction: column;
+    align-items: center; /* Aligns items in the center */
+  }
+  .testimonial-container {
+    grid-template-columns: 1fr;
+  }
+  .testimonial-button {
+    display: block;
+    margin: 0 auto;
+  }
+}
 </style>
+
+
 
 <script>
   {% if has_errors %}
@@ -207,5 +482,41 @@ img{
   });
   {% endif %}
 </script>
+
+<script>
+    let viewButton = document.getElementById('toggle-view');
+    let testimonials = document.getElementsByClassName('testimonial-card');
+    let areAllVisible = false;
+
+    function initialize() {
+        // Hide extra testimonials
+        for (let i = 3; i < testimonials.length; i++) {
+            testimonials[i].style.display = 'none';
+        }
+    }
+
+    // Call initialize function on page load
+    window.onload = initialize;
+
+    viewButton.addEventListener('click', function() {
+        if (!areAllVisible) {
+            // Show all testimonials
+            for (let i = 4; i < testimonials.length; i++) {
+                testimonials[i].style.display = 'flex';
+            }
+            viewButton.textContent = 'View Less';
+            areAllVisible = true;
+        } else {
+            // Hide extra testimonials
+            for (let i = 3; i < testimonials.length; i++) {
+                testimonials[i].style.display = 'none';
+            }
+            viewButton.textContent = 'View More';
+            areAllVisible = false;
+        }
+    });
+</script>
+
+
 
 {% endblock %}

@@ -6,15 +6,18 @@
 
 
 <form method="POST" class = "login_form">
-	<h4>LOG IN</h4>
-	{% csrf_token %}
-	{{ form|crispy }}
-	<button class="login_button">Log In</button>
+    <h4>LOG IN</h4>
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button class="login_button">Log In</button>
 
-	<hr>
-	<label>Dont have an account?</label>
-	<a href="{% url 'register' %}">Register here</a>
-</form> 
+    <hr>
+    <label>Dont have an account?</label>
+    <a href="{% url 'register' %}">Register here</a>
+    <br>
+    <a href="{% url 'password_reset' %}">Forgot your password?</a>
+</form>
+
 
 <style> 
 

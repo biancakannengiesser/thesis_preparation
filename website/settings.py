@@ -106,6 +106,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.context_processors.report_problem_form',
             ],
         },
     },
@@ -166,6 +167,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #print the email in the console(dev purposes)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 #for email: 
 

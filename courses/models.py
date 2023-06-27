@@ -38,7 +38,7 @@ class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # any other lesson-specific data you have
+    audio_file = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.course} - {self.title}"

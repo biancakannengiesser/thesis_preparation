@@ -15,7 +15,7 @@
 {% endif %}
 
 <form method="post" class = "course-form" enctype="multipart/form-data">
-	<h2>Add a course</h2>
+    <h2>Add a course</h2>
     {% csrf_token %}
     <div>
         {{ form.title|as_crispy_field }}
@@ -26,11 +26,14 @@
         {{ form.teacher|as_crispy_field }}
     </div>
     {{ formset.management_form }}
+    <div class="images">
     {% for image_form in formset %}
         <div>
             {{ image_form.image|as_crispy_field }}
         </div>
     {% endfor %}
+    </div>
+    <button class="add_image_button">Add another slider image</button>
     <button class="course_button">Add Course</button>
 </form>
 
@@ -60,7 +63,20 @@
 <a href="{% url 'courses' %}" class="edit-button go-to">View Courses</a>
 <a href="{% url 'edit_courses' %}" class="edit-button">Edit Courses</a>
 
+
 <style>
+.add_image_button{
+  border-radius: 12px;
+  border: 2px solid #366473;
+  padding: 10px 20px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: #9BABB8;
+}
 
 .courses-display{
     width: 70%;
@@ -137,6 +153,32 @@ td{
 .go-to:hover{
 	background-color:#146C94;
 }
+
+
 </style>
+
+<script>
+$(document).ready(function() {
+    let max_fields = 7;
+    let wrapper = $(".images");
+    let add_button = $(".add_image_button");
+
+    let x = 2; // initial image input count
+    $(add_button).click(function(e) {
+        e.preventDefault();
+        if(x < max_fields) {
+            x++;
+            $(wrapper).append('<div><label for="id_images-'+x+'-image">Image</label><br><input type="file" name="images-'+x+'-image" id="id_images-'+x+'-image"/><a href="#" class="delete">Delete</a></div>');
+        } else {
+            alert('You Reached the limits')
+        }
+    });
+
+    $(wrapper).on("click",".delete", function(e){
+        e.preventDefault();
+        $(this).parent('div').remove(); x--;
+    });
+});
+</script>
 
 {% endblock %}

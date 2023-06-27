@@ -1,4 +1,5 @@
 {% load static %}
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,17 +73,24 @@
             <a class="nav-item nav-link" href="{% url 'staff' %}">Team</a>
             <a class="nav-item nav-link" href="{% url 'courses' %}">Subjects</a>
             
-            {% if user.is_staff %}
+            {% if user.is_staff %}   
 
-            <a class="nav-item nav-link" href="{% url 'users' %}">Users</a>
-            <a class="nav-item nav-link" href="{% url 'edit_content' %}">Content</a>                  
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Platform Management</a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="{% url 'users' %}">Users</a></li>
+                    <li><a class="dropdown-item" href="{% url 'edit_content' %}">Content</a></li>
+                    <li><a class="dropdown-item" href="{% url 'new_member_requests' %}">New Member Requests</a></li>
+                    <li><a class="dropdown-item" href="{% url 'reported_problems' %}">Reported Problems</a></li>
+                </ul>
+            </div>
+              
 
             {% endif %}
             <div class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                     <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                    <li><a class="dropdown-item" href="#">Customer</a></li>
                     <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
                 </ul>
             </div>
@@ -94,7 +102,6 @@
             <a class="nav-item nav-link active" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
             <a class="nav-item nav-link" href="{% url 'staff' %}">Team</a>
             <a class="nav-item nav-link" href="{% url 'courses' %}">Subjects</a>
-            <a class="nav-item nav-link disabled" href="#" tabindex="-1" aria-disabled="true">page</a>
           </div>
 
         <div class="navbar-nav ms-auto">
@@ -109,12 +116,38 @@
 
     {% endblock %}
 
-    <!-- footer -->
+<!-- modal for report a problem -->
 
+    <div class="button-wrapper">
+        <button type="button" class="btn btn-primary report-problem-btn" data-bs-toggle="modal" data-bs-target="#reportProblemModal">Report a problem</button>
+    </div>
+
+    <div class="modal fade" id="reportProblemModal" tabindex="-1" aria-labelledby="reportProblemModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reportProblemModalLabel">Report a Problem</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{% url 'report_problem' %}">
+              {% csrf_token %}
+              {{ report_problem_form|crispy }}
+              <button type="submit" class="btn btn-primary submit-problem-btn">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- scroll up button -->
+    <button onclick="topFunction()" id="scrollTopBtn" title="Go to top"><i class="fa-solid fa-angle-up"></i></button>
+
+<!-- footer -->
   <footer>
         <div class="footer-column">
             <h3>Junior Basics</h3>
-            <p>Your website description goes here. This can be a few sentences long, explaining the purpose and mission of your website.</p>
+            <p>At <strong>Junior Basics</strong>, we are committed to nurturing a lifelong love for learning. We invite children to join us on this educational adventure, where they can uncover the wonders of the world, broaden their perspectives, and discover their own potential.</p>
         </div>
         <div class="footer-column">
             <h3>Useful Links</h3>
@@ -152,6 +185,9 @@ body{
     background-color: white; 
     font-family: 'EB Garamond', serif;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .navbar-brand img{
@@ -180,10 +216,11 @@ footer {
     background-color: #E6E6FA; 
     color: black;
     padding: 20px 10%;
-    margin-top: 5%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    position:relative;
+    z-index:10;
 }
 
 .footer-column {
@@ -234,4 +271,100 @@ footer {
     }
 }
 
+#scrollTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+    border: none;
+    outline: none;
+    background-color: #f3f3f3;
+    color: black;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    opacity: 0.7;
+    width: 40px;
+    height: 40px; 
+}
+
+#scrollTopBtn:hover {
+    opacity: 1;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: center; /* This centers the button horizontally */
+    margin-bottom: 20px; /* Add some space above the footer */
+}
+.submit-problem-btn{
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #9932CC;
+    border: none;
+    color: #ffffff;
+    font-size: 1.1em;
+    max-width: 200px; /* restrict the width of the button */
+    width: 100%; /* make the button expand to the max-width */
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.report-problem-btn {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #C4B0FF;
+    border: none;
+    color: #ffffff;
+    font-size: 1.1em;
+    max-width: 200px; /* restrict the width of the button */
+    width: 100%; /* make the button expand to the max-width */
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content {
+    padding: 20px;
+    font-size: 1.1em;
+}
+
+.modal-title {
+    font-size: 1.3em;
+    color: #9932CC; /* Match the title color to your button */
+}
+
+.modal-dialog {
+    max-width: 500px; /* Change this to adjust the overall modal size */
+}
+#reportProblemModalLabel{
+    font-size: 2rem;
+}
+
+
 </style>
+
+<script>
+    
+// Get the button:
+var mybutton = document.getElementById("scrollTopBtn");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.display = "block";
+  } else {
+    mybutton.style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+
+</script>

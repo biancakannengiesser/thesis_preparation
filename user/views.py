@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.db import transaction, IntegrityError, DatabaseError
 import logging
+from .models import TeamMemberRequest
 
 logger = logging.getLogger(__name__)
 
@@ -68,22 +69,43 @@ def staff_members(request):
         return render(request, '500.html')
     return render(request, 'staff.html', {'staff_profiles': staff_profiles})
 
-
+@login_required
 def users(request):
-	users = User.objects.all()
-	return render(request, 'users.html', {'users': users})
+    if request.method == 'POST':
+        msg = "The user has been deleted."
+        user_id = request.POST.get('user_id')
+        if user_id:
+            user = User.objects.get(id=user_id)
+            if user == request.user:
+                logout(request)  # Log out the user before deleting
+                msg = "You have deleted you own account. If you wish to create another one, please register."
+                messages.success(request, msg)
+                return redirect('home')  # Redirect to a page indicating account deletion
+            user.delete()
+            messages.success(request, msg)
+            return redirect('users')  # Redirect to the users page after deletion
+
+    users = User.objects.all()
+    return render(request, 'users.html', {'users': users})
 
 
+@login_required
 def view_profile_as_admin(request, user_id):
 	user = get_object_or_404(User, id=user_id)
 	quiz_completions = QuizCompletion.objects.filter(user=request.user)
 	return render(request, 'view_profile_as_admin.html', {'user':user, 'quiz_completions': quiz_completions})
 
-
 @login_required
 def view_profile(request):
-	quiz_completions = QuizCompletion.objects.filter(user=request.user)
-	return render(request, 'profile.html', {'quiz_completions': quiz_completions})
+    quiz_completions = QuizCompletion.objects.filter(user=request.user)
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, "You have successfully deleted your account.")
+        return redirect('home')
+
+    return render(request, 'profile.html', {'quiz_completions': quiz_completions})
 
 @login_required
 def edit_profile(request):
@@ -170,3 +192,8 @@ def edit_profile(request):
             return redirect('edit_profile')
 
     return render(request, 'edit_profile.html')
+
+
+def new_member_requests(request):
+    requests = TeamMemberRequest.objects.all()
+    return render(request, 'new_member_requests.html', {'requests': requests})

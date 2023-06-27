@@ -14,13 +14,14 @@
 </div>
 {% endif %}
 
-<form method="POST" class="lesson_form">
+<form method="POST" class="lesson_form" enctype="multipart/form-data">
     <h2>Add a Lesson</h2>
     {% csrf_token %}
     <div>
         {{ form.course|as_crispy_field }}
         {{ form.title|as_crispy_field }}
         {{ form.content|as_crispy_field }}
+        {{ form.audio_file|as_crispy_field}}
     </div>
     <button class="lesson_button">Add Lesson</button>
 </form>
@@ -40,6 +41,11 @@
                     <td>{{ lesson.course }}</td>
                     <td>{{ lesson.title }}</td>
                     <td>{{ lesson.content }}</td>
+                    {%if lesson.audio_file %}
+                    <td><audio controls><source src="{{ lesson.audio_file.url }}" type="audio/mpeg">Your browser does not support the audio element.</audio></td>
+                    {% else %}
+                    <td>This lesson has no audio file</td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
@@ -47,6 +53,7 @@
 </div>
 
 <a href="{% url 'edit_lessons' %}" class="edit-button">Edit Lessons</a>
+
 
 <style>
 
@@ -121,6 +128,8 @@ td{
 .edit-button:hover {
     background-color: #483D8B;
 }
+
+
 </style>
 
 {% endblock %}

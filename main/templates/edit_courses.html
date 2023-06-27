@@ -169,21 +169,20 @@ document.querySelectorAll('.add-image-button').forEach(button => {
     button.addEventListener('click', function() {
         const imageInputs = this.parentElement;
         const newImageInput = document.createElement('div');
-        const imageCount = imageInputs.children.length;
+        const imageCount = imageInputs.querySelectorAll('input[type="file"]').length;
 
         newImageInput.classList.add('mb-3', 'row');
         newImageInput.innerHTML = `
-            <label class="col-sm-2 col-form-label">Image Slider ${imageCount}</label>
+            <label class="col-sm-2 col-form-label">Image Slider ${imageCount+1}</label>
             <div class="col-sm-10">
-                <img id="courseImage${imageCount}" style="width: 200px; height: 200px; display: none;">
-                <input type="file" name="image_${imageCount}" accept="image/*" onchange="loadImage(event, 'courseImage${imageCount}')">
+                <img id="courseImage${imageCount+1}" style="width: 200px; height: 200px; display: none;">
+                <input type="file" name="new_image_${imageCount}" accept="image/*" onchange="loadImage(event, 'courseImage${imageCount+1}')">
             </div>
         `;
 
         imageInputs.insertBefore(newImageInput, this);
     });
 });
-
 
 </script>
 

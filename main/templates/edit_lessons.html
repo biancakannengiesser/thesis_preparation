@@ -13,72 +13,111 @@
 </div>
 {% endif %}
 
-    <div class="container py-5">
-        <div class="accordion" id="courseAccordion">
-            {% for course in courses %}
-            <div class="accordion-item mb-3">
-                <h2 class="accordion-header" id="headingCourse{{ course.id }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCourse{{ course.id }}" aria-expanded="false" aria-controls="collapseCourse{{ course.id }}">
-                        Course: <strong>{{ course.title }}</strong>
-                    </button>
-                </h2>
-                <div id="collapseCourse{{ course.id }}" class="accordion-collapse collapse" aria-labelledby="headingCourse{{ course.id }}" data-bs-parent="#courseAccordion">
-                    <div class="accordion-body">
-                      {% if course.lesson_set.all %}
-                        <div class="accordion" id="lessonAccordion{{ course.id }}">
-                            {% for lesson in course.lesson_set.all %}
-                            <div class="accordion-item mb-3">
-                                <h2 class="accordion-header" id="headingLesson{{ lesson.id }}">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLesson{{ lesson.id }}" aria-expanded="false" aria-controls="collapseLesson{{ lesson.id }}">
-                                        Lesson: {{ lesson.title }}
-                                    </button>
-                                </h2>
-                                <div id="collapseLesson{{ lesson.id }}" class="accordion-collapse collapse" aria-labelledby="headingLesson{{ lesson.id }}" data-bs-parent="#lessonAccordion{{ course.id }}">
-                                    <div class="accordion-body">
-                                        <form action="{% url 'edit_lessons' %}" method="POST">
-                                            {% csrf_token %}
-                                            <div class="mb-3 row">
-                                                <label class="col-sm-2 col-form-label">Title</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" name="lesson-{{lesson.id}}-title" value="{{ lesson.title }}">
-                                                </div>
+<div class="container py-5">
+    <div class="accordion" id="courseAccordion">
+        {% for course, forms in lesson_forms %}
+        <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingCourse{{ course.id }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCourse{{ course.id }}" aria-expanded="false" aria-controls="collapseCourse{{ course.id }}">
+                    Course: <strong>{{ course.title }}</strong>
+                </button>
+            </h2>
+            <div id="collapseCourse{{ course.id }}" class="accordion-collapse collapse" aria-labelledby="headingCourse{{ course.id }}" data-bs-parent="#courseAccordion">
+                <div class="accordion-body">
+                  {% if forms %}
+                    <div class="accordion" id="lessonAccordion{{ course.id }}">
+                        {% for form in forms %}
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header" id="headingLesson{{ form.instance.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLesson{{ form.instance.id }}" aria-expanded="false" aria-controls="collapseLesson{{ form.instance.id }}">
+                                    Lesson: {{ form.instance.title }}
+                                </button>
+                            </h2>
+                            <div id="collapseLesson{{ form.instance.id }}" class="accordion-collapse collapse" aria-labelledby="headingLesson{{ form.instance.id }}" data-bs-parent="#lessonAccordion{{ course.id }}">
+                                <div class="accordion-body">
+                                    <form action="{% url 'edit_lessons' %}" method="POST" class = "form" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="lesson-{{ form.instance.id }}-course" value="{{ form.instance.course.id }}">
+                                        <div class="mb-3 row">
+                                            <label class="col-sm-2 col-form-label">Title</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="lesson-{{ form.instance.id }}-title" rows="1" cols="90">{{ form.instance.title }}</textarea>
                                             </div>
-                                            <hr>
-                                            <div class="mb-3 row">
-                                                <label class="col-sm-2 col-form-label">Content</label>
-                                                <div class="col-sm-10">
-                                                    <textarea class="form-control" name="lesson-{{lesson.id}}-content" rows="4">{{ lesson.content }}</textarea>
-                                                </div>
+                                        </div>
+                                        <hr>
+                                        <div class="mb-3 row">
+                                            <label class="col-sm-2 col-form-label">Content</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="lesson-{{ form.instance.id }}-content" rows="8" cols="90">{{ form.instance.content }}</textarea>
                                             </div>
-                                            <hr>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="lesson-{{lesson.id}}-delete">
-                                                <label class="form-check-label">
-                                                    Delete this lesson
-                                                </label>
+                                        </div>
+                                        <hr>
+                                        <div class="mb-3 row">
+                                            <label class="col-sm-2 col-form-label">Audio File</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" name="lesson-{{ form.instance.id }}-audio_file" accept="audio/*,video/mp4">
+                                                {% if form.instance.audio_file %}
+                                                    <p>Current audio: <a href="{{ form.instance.audio_file.url }}">{{ form.instance.audio_file.name }}</a></p>
+                                                {% else %}
+                                                    <p>No audio file uploaded.</p>
+                                                {% endif %}
                                             </div>
-                                            <hr>
-                                            <button type="submit" id = "save" class="button-style">Save changes</button>
-                                            <button type="reset" id = "cancel" class="button-style" onclick="location.reload();">Cancel</button>
-                                        </form>
-                                    </div>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="lesson-{{form.instance.id}}-delete_audio">
+                                            <label class="form-check-label">
+                                                Delete the audio
+                                            </label>
+                                        </div>
+                                        <hr>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="lesson-{{form.instance.id}}-delete">
+                                            <label class="form-check-label">
+                                                Delete this lesson
+                                            </label>
+                                        </div>
+                                        <hr>
+                                        <button type="submit" id = "save" class="button-style">Save changes</button>
+                                        <button type="reset" id = "cancel" class="button-style" onclick="location.reload();">Cancel</button>
+                                    </form>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                      {% else %}
-                        <p>No lessons found for this course.</p>
-                      {% endif %}
+                        {% endfor %}
                     </div>
+                  {% else %}
+                    <p>No lessons found for this course.</p>
+                  {% endif %}
                 </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
-
+</div>
 
 <style>
-    
+
+.form label {
+    font-size: 1.3rem;
+    color: #7E1717;
+}
+
+.form {
+    width: 80%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    background-color: #F8E8EE;
+    padding: 20px;
+    margin-top: 50px;
+}
+.form input, .form textarea {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 1.1rem;
+}
+
+
 .button-style{
   border-radius: 12px;
   border: 2px solid #366473;
@@ -98,18 +137,8 @@
     background-color: #3BAF9F;
 }
 
-.col-form-label{
-    color: #FF2171;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
 .accordion-button{
     font-size: 1.3rem;
-}
-
-.col-sm-10, .form-control{
-    font-size: 1rem;
 }
 
 </style>

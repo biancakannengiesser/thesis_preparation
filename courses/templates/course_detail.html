@@ -48,6 +48,12 @@
             <div class="lesson">
                 <h2 class="lesson-title">{{ lesson.title }}</h2>
                 <p class="lesson-content">{{ lesson.content }}</p>
+                {% if lesson.audio_file %}
+                    <audio controls>
+                        <source src="{{ lesson.audio_file.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                {% endif %}
             </div>
         {% if forloop.counter|divisibleby:2 or forloop.last %}
             </div>

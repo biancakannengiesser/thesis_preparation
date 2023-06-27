@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class = "text-center">Team Member Requests</h1>
+<div class = "display-requests">
+    <table>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Phone Number</th>
+            <th>Email Address</th>
+            <th>Motivation</th>
+            <th>Resume</th>
+        </tr>
+        {% for request in requests %}
+        <tr>
+            <td>{{ request.first_name }}</td>
+            <td>{{ request.last_name }}</td>
+            <td>{{ request.phone_number }}</td>
+            <td>{{ request.email_address }}</td>
+            <td>{{ request.motivation }}</td>
+            <td><a href="{{ request.resume.url }}">Download Resume</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No requests found</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<style>
+
+.text-center{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+	
+.display-requests{
+    width: 75%;
+    margin: 0 auto;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+td, th{
+    border: 1px solid #ddd;
+    padding:8px;
+}
+th{
+    font-size: 1.3rem;
+    color: darkred;
+}
+td{
+    font-size: 1.2rem;
+}
+
+</style>
+{% endblock%}

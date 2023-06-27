@@ -10,5 +10,7 @@ urlpatterns = [
 	path('add_lessons', views.add_lessons, name = "add_lessons"),
 	path('add_quiz', views.add_quiz, name = "add_quiz"),
 	path('add_course', views.add_course, name = "add_course"),
+	path('report_problem/', views.report_problem, name='report_problem'),
+	path('reported_problems', views.reported_problems, name='reported_problems'),
 
 ]

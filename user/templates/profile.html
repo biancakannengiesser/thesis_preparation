@@ -32,9 +32,17 @@
                     <p><strong class = "info-card">Your points:</strong> {{ user.userprofile.total_score }}</p>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 40px;">
-                <a href="{% url 'edit_profile' %}" class="btn btn-primary profile-button">Edit Profile</a>
-            </div>
+<div style="text-align: center;">
+  <div class="button-container">
+    <a href="{% url 'edit_profile' %}" class="btn btn-primary profile-button">Edit Profile</a>
+    <form method="POST" action="">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary profile-button">Delete Profile</button>
+    </form>
+  </div>
+</div>
+
+
         </div>
 
             <div class="col-md-4 mt-5 mt-md-0">
@@ -110,6 +118,12 @@
     .card-body p{
         font-size: 1.2rem;
     }
+      .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 40px;
+  }
 </style>
 
 {% endblock %}
